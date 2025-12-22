@@ -1,6 +1,7 @@
 package com.aspect.oriented;
 
 import com.aspect.oriented.dao.AccountDAO;
+import com.aspect.oriented.dao.MembershipDAO;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,17 +15,15 @@ public class AopApiApplication {
     }
 
     @Bean
-    public CommandLineRunner commandLineRunner(AccountDAO theAccountDAO) {
+    public CommandLineRunner commandLineRunner(AccountDAO theAccountDAO, MembershipDAO theMembershipDAO) {
         return runner -> {
-            demoTheBeforeAdvice(theAccountDAO);
+            demoTheBeforeAdvice(theAccountDAO, theMembershipDAO);
         };
     }
 
-    private void demoTheBeforeAdvice(AccountDAO theAccountDAO) {
+    private void demoTheBeforeAdvice(AccountDAO theAccountDAO, MembershipDAO theMembershipDAO) {
         theAccountDAO.addAccount();
 
-        System.out.println("\nlet's call it again!\n");
-
-        theAccountDAO.addAccount();
+        theMembershipDAO.addAccount();
     }
 }
