@@ -22,5 +22,9 @@ public class AopApiApplication {
 
     private void demoTheBeforeAdvice(AccountDAO theAccountDAO) {
         theAccountDAO.addAccount();
+
+        System.out.println("\nlet's call it again!\n");
+
+        theAccountDAO.addAccount();
     }
 }
