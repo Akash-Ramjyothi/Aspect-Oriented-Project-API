@@ -1,5 +1,7 @@
 package com.aspect.oriented.dao;
 
+import com.aspect.oriented.Account;
+
 public interface AccountDAO {
-    void addAccount();
+    void addAccount(Account theAccount);
 }
