@@ -25,7 +25,9 @@ public class AopApiApplication {
         Account theAccount = new Account();
 
         theAccountDAO.addAccount(theAccount, true);
+        theAccountDAO.doWork();
 
         theMembershipDAO.addSillyMember();
+        theMembershipDAO.goToSleep();
     }
 }
