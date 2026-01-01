@@ -11,7 +11,7 @@ public class LoggingAspect {
     //    @Before("execution(public void updateAccount())")
 //    @Before("execution(public void add*())")
 //    @Before("execution(* add*())")
-    @Before("execution(* add*(com.aspect.oriented.Account, ..))")
+    @Before("execution(* add*(..))")
     public void beforeAddAccountAdvice() {
         System.out.println("\n====>>> Executing @Before advice on addAccount()");
     }
