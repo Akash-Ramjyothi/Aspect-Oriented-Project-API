@@ -7,23 +7,11 @@ public interface AccountDAO {
 
     boolean doWork();
 
-    public String getName() {
-        System.out.println(getClass() + " : in getName()");
-        return name;
-    }
+    public String getName();
 
-    public void setName(String name) {
-        System.out.println(getClass() + " : in serName()");
-        this.name = name;
-    }
+    public void setName(String name);
 
-    public String getServiceCode() {
-        System.out.println(getClass() + " : in getServiceCode()");
-        return serviceCode;
-    }
+    public String getServiceCode();
 
-    public void setServiceCode(String serviceCode) {
-        System.out.println(getClass() + " : in setServiceCode()");
-        this.serviceCode = serviceCode;
-    }
+    public void setServiceCode(String serviceCode);
 }
