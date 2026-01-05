@@ -2,13 +2,16 @@ package com.aspect.oriented.aspect;
 
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 @Aspect
 @Component
-public class MyCloudLogAsyncAspect {@Before("forDaoPackageNoGetterSetter()")
+@Order(1)
+public class MyCloudLogAsyncAspect {
 
-public void logToCloudAsync() {
-    System.out.println("\n====>>> Logging to Cloud in async fashion");
-}
+    @Before("com.aspect.oriented.aspect.AopExpressions.forDaoPackageNoGetterSetter()")
+    public void logToCloudAsync() {
+        System.out.println("\n====>>> Logging to Cloud in async fashion");
+    }
 }
