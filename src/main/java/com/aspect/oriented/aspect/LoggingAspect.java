@@ -27,6 +27,17 @@ public class LoggingAspect {
         System.out.println("\n=====>>> Executing @AfterReturning on method: " + method);
 
         System.out.println("\n=====>>> Result is: " + result);
+        
+        convertAccountNamesToUpperCase(result);
+        System.out.println("\n=====>>> Result is: " + result);
+    }
+
+    private void convertAccountNamesToUpperCase(List<Account> result) {
+
+        for(Account tempAccount:result){
+            String theUpperName=tempAccount.getName().toUpperCase();
+            tempAccount.setName(theUpperName);
+        }
     }
 
     //    @Before("execution(public void updateAccount())")
