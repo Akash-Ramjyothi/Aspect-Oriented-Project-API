@@ -2,7 +2,12 @@ package com.aspect.oriented.dao;
 
 import com.aspect.oriented.Account;
 
+import java.util.List;
+
 public interface AccountDAO {
+
+    List<Account> findAccounts();
+
     void addAccount(Account theAccount, boolean vipFlag);
 
     boolean doWork();
