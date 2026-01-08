@@ -21,8 +21,27 @@ public class AopApiApplication {
         return runner -> {
 //            demoTheBeforeAdvice(theAccountDAO, theMembershipDAO);
 //            demoTheAfterReturningAdvice(theAccountDAO);
-            demoTheAfterThrowingAdvie(theAccountDAO);
+//            demoTheAfterThrowingAdvie(theAccountDAO);
+            demoTheAfterAdvice(theAccountDAO);
         };
+    }
+
+    private void demoTheAfterAdvice(AccountDAO theAccountDAO) {
+        List<Account> theAccounts = null;
+
+        try {
+            boolean tripWire = false;
+            theAccounts = theAccountDAO.findAccounts(tripWire);
+        } catch (Exception exc) {
+            System.out.println("\n\nMain Program: caught exception: " + exc);
+
+        }
+
+        System.out.println("\n\nMain Program: demoTheAfterThrowingAdvie");
+        System.out.println("----");
+
+        System.out.println("theAccounts : " + theAccounts);
+        System.out.println("\n");
     }
 
     private void demoTheAfterThrowingAdvie(AccountDAO theAccountDAO) {
