@@ -20,8 +20,27 @@ public class AopApiApplication {
     public CommandLineRunner commandLineRunner(AccountDAO theAccountDAO, MembershipDAO theMembershipDAO) {
         return runner -> {
 //            demoTheBeforeAdvice(theAccountDAO, theMembershipDAO);
-            demoTheAfterReturningAdvice(theAccountDAO);
+//            demoTheAfterReturningAdvice(theAccountDAO);
+            demoTheAfterThrowingAdvie(theAccountDAO);
         };
+    }
+
+    private void demoTheAfterThrowingAdvie(AccountDAO theAccountDAO) {
+        List<Account> theAccounts = null;
+
+        try {
+            boolean tripWire = true;
+            theAccounts = theAccountDAO.findAccounts(tripWire);
+        } catch (Exception exc) {
+            System.out.println("\n\nMain Program: caught exception: " + exc);
+
+        }
+
+        System.out.println("\n\nMain Program: demoTheAfterThrowingAdvie");
+        System.out.println("----");
+
+        System.out.println("theAccounts : " + theAccounts);
+        System.out.println("\n");
     }
 
     private void demoTheAfterReturningAdvice(AccountDAO theAccountDAO) {
