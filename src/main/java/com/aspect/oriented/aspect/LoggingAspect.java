@@ -2,10 +2,7 @@ package com.aspect.oriented.aspect;
 
 import com.aspect.oriented.Account;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.AfterReturning;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.annotation.*;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +13,17 @@ import java.util.List;
 @Component
 @Order(2)
 public class LoggingAspect {
+
+    @AfterThrowing(
+            pointcut = "execution(* com.aspect.oriented.dao.AccountDAO.findAccounts(..))",
+            throwing = "theExc"
+    )
+    public void afterThrowingFindAccountsAdvice(JoinPoint theJoinPoint, Throwable theExc){
+        String method = theJoinPoint.getSignature().toShortString();
+        System.out.println("\n=====>>> Executing @AfterThrowing on method: " + method);
+
+        System.out.println("\n=====>>> The Exception is: " + theExc);
+    }
 
     @AfterReturning(
             pointcut = "execution(* com.aspect.oriented.dao.AccountDAO.findAccounts(..))",
