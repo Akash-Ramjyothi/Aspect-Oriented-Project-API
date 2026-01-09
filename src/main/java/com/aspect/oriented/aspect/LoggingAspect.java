@@ -2,6 +2,7 @@ package com.aspect.oriented.aspect;
 
 import com.aspect.oriented.Account;
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -14,8 +15,15 @@ import java.util.List;
 @Order(2)
 public class LoggingAspect {
 
+    @Around("execution(* com.aspect.oriented.service.*.getFortune(..))")
+    public Object aroundGetFortune(
+            ProceedingJoinPoint theProceedingJoinPoint) throws Throwable {
+        return null;
+    }
+
+
     @After("execution(* com.aspect.oriented.dao.AccountDAO.findAccounts(..))")
-    public void afterFinallyFindAccountsAdvice(JoinPoint theJoinPoint){
+    public void afterFinallyFindAccountsAdvice(JoinPoint theJoinPoint) {
         String method = theJoinPoint.getSignature().toShortString();
         System.out.println("\n=====>>> Executing @After (finally) on method: " + method);
     }
@@ -24,7 +32,7 @@ public class LoggingAspect {
             pointcut = "execution(* com.aspect.oriented.dao.AccountDAO.findAccounts(..))",
             throwing = "theExc"
     )
-    public void afterThrowingFindAccountsAdvice(JoinPoint theJoinPoint, Throwable theExc){
+    public void afterThrowingFindAccountsAdvice(JoinPoint theJoinPoint, Throwable theExc) {
         String method = theJoinPoint.getSignature().toShortString();
         System.out.println("\n=====>>> Executing @AfterThrowing on method: " + method);
 
@@ -41,15 +49,15 @@ public class LoggingAspect {
         System.out.println("\n=====>>> Executing @AfterReturning on method: " + method);
 
         System.out.println("\n=====>>> Result is: " + result);
-        
+
         convertAccountNamesToUpperCase(result);
         System.out.println("\n=====>>> Result is: " + result);
     }
 
     private void convertAccountNamesToUpperCase(List<Account> result) {
 
-        for(Account tempAccount:result){
-            String theUpperName=tempAccount.getName().toUpperCase();
+        for (Account tempAccount : result) {
+            String theUpperName = tempAccount.getName().toUpperCase();
             tempAccount.setName(theUpperName);
         }
     }
