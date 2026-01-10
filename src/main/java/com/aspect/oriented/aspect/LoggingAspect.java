@@ -23,11 +23,8 @@ public class LoggingAspect {
         System.out.println("\n=====>>> Executing @Around on method: " + method);
 
         long begin = System.currentTimeMillis();
-
         Object result = theProceedingJoinPoint.proceed();
-
         long end = System.currentTimeMillis();
-
         long duration = end - begin;
 
         System.out.println("\n====> Duration: " + duration / 1000.0 + " seconds");
