@@ -2,6 +2,7 @@ package com.aspect.oriented;
 
 import com.aspect.oriented.dao.AccountDAO;
 import com.aspect.oriented.dao.MembershipDAO;
+import com.aspect.oriented.entity.Account;
 import com.aspect.oriented.service.TrafficFortuneService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -18,112 +19,140 @@ public class AopApiApplication {
     }
 
     @Bean
-    public CommandLineRunner commandLineRunner(AccountDAO theAccountDAO,
-                                               MembershipDAO theMembershipDAO,
-                                               TrafficFortuneService theTrafficFortuneService) {
-        return runner -> {
-//            demoTheBeforeAdvice(theAccountDAO, theMembershipDAO);
-//            demoTheAfterReturningAdvice(theAccountDAO);
-//            demoTheAfterThrowingAdvie(theAccountDAO);
-//            demoTheAfterAdvice(theAccountDAO);
-//            demoTheAroundAdvice(theTrafficFortuneService);
-//            demoTheAroundAdviceHandleException(theTrafficFortuneService);
+    public CommandLineRunner commandLineRunner(AccountDAO accountDAO,
+                                               MembershipDAO membershipDAO,
+                                               TrafficFortuneService trafficFortuneService) {
+        return args -> {
 
-            demoTheAroundAdviceReThrowException(theTrafficFortuneService);
+            // Uncomment as needed to test specific AOP advice types
+
+            // demoBeforeAdvice(accountDAO, membershipDAO);
+            // demoAfterReturningAdvice(accountDAO);
+            // demoAfterThrowingAdvice(accountDAO);
+            // demoAfterAdvice(accountDAO);
+            // demoAroundAdvice(trafficFortuneService);
+            // demoAroundAdviceHandleException(trafficFortuneService);
+
+            demoAroundAdviceReThrowException(trafficFortuneService);
         };
     }
 
-    private void demoTheAroundAdviceReThrowException(TrafficFortuneService theTrafficFortuneService) {
-        System.out.println("\nMain Program: demoTheAroundAdviceReThrowException");
-        System.out.println("Calling getFortune()");
-
-        boolean tripWire=true;
-        String data = theTrafficFortuneService.getFortune(tripWire);
-        System.out.println("\nMy fortune is: " + data);
-        System.out.println("Finished");
-    }
-
-    private void demoTheAroundAdviceHandleException(TrafficFortuneService theTrafficFortuneService) {
-        System.out.println("\nMain Program: demoTheAroundAdvice");
-        System.out.println("Calling getFortune()");
-
-        boolean tripWire=true;
-        String data = theTrafficFortuneService.getFortune(tripWire);
-        System.out.println("\nMy fortune is: " + data);
-        System.out.println("Finished");
-    }
-
-    private void demoTheAroundAdvice(TrafficFortuneService theTrafficFortuneService) {
-        System.out.println("\nMain Program: demoTheAroundAdvice");
-        System.out.println("Calling getFortune()");
-
-        String data = theTrafficFortuneService.getFortune();
-        System.out.println("\nMy fortune is: " + data);
-        System.out.println("Finished");
-    }
-
-    private void demoTheAfterAdvice(AccountDAO theAccountDAO) {
-        List<Account> theAccounts = null;
-
-        try {
-            boolean tripWire = false;
-            theAccounts = theAccountDAO.findAccounts(tripWire);
-        } catch (Exception exc) {
-            System.out.println("\n\nMain Program: caught exception: " + exc);
-
-        }
-
-        System.out.println("\n\nMain Program: demoTheAfterThrowingAdvie");
-        System.out.println("----");
-
-        System.out.println("theAccounts : " + theAccounts);
-        System.out.println("\n");
-    }
-
-    private void demoTheAfterThrowingAdvie(AccountDAO theAccountDAO) {
-        List<Account> theAccounts = null;
+    /**
+     * Demonstrates @Around advice with exception rethrowing
+     */
+    private void demoAroundAdviceReThrowException(TrafficFortuneService service) {
+        log("demoAroundAdviceReThrowException");
 
         try {
             boolean tripWire = true;
-            theAccounts = theAccountDAO.findAccounts(tripWire);
-        } catch (Exception exc) {
-            System.out.println("\n\nMain Program: caught exception: " + exc);
-
+            String data = service.getFortune(tripWire);
+            log("Fortune: " + data);
+        } catch (Exception ex) {
+            log("Exception rethrown to main: " + ex.getMessage());
         }
 
-        System.out.println("\n\nMain Program: demoTheAfterThrowingAdvie");
-        System.out.println("----");
-
-        System.out.println("theAccounts : " + theAccounts);
-        System.out.println("\n");
+        log("Finished\n");
     }
 
-    private void demoTheAfterReturningAdvice(AccountDAO theAccountDAO) {
-        List<Account> theAccounts = theAccountDAO.findAccounts();
+    /**
+     * Demonstrates @Around advice with exception handling
+     */
+    private void demoAroundAdviceHandleException(TrafficFortuneService service) {
+        log("demoAroundAdviceHandleException");
 
-        System.out.println("\n\nMain Program: demoTheAfterReturningAdvice");
-        System.out.println("----");
+        boolean tripWire = true;
+        String data = service.getFortune(tripWire);
 
-        System.out.println("theAccounts : " + theAccounts);
-        System.out.println("\n");
+        log("Fortune: " + data);
+        log("Finished\n");
     }
 
-    private void demoTheBeforeAdvice(AccountDAO theAccountDAO, MembershipDAO theMembershipDAO) {
-        Account theAccount = new Account();
+    /**
+     * Demonstrates basic @Around advice
+     */
+    private void demoAroundAdvice(TrafficFortuneService service) {
+        log("demoAroundAdvice");
 
-        theAccount.setName("Madhu");
-        theAccount.setLevel("Platinum");
+        String data = service.getFortune();
 
-        theAccountDAO.addAccount(theAccount, true);
-        theAccountDAO.doWork();
+        log("Fortune: " + data);
+        log("Finished\n");
+    }
 
-        theAccountDAO.setName("foobar");
-        theAccountDAO.setServiceCode("silver");
+    /**
+     * Demonstrates @After (finally) advice
+     */
+    private void demoAfterAdvice(AccountDAO accountDAO) {
+        log("demoAfterAdvice");
 
-        String name = theAccountDAO.getName();
-        String code = theAccountDAO.getServiceCode();
+        List<Account> accounts = null;
 
-        theMembershipDAO.addSillyMember();
-        theMembershipDAO.goToSleep();
+        try {
+            accounts = accountDAO.findAccounts(false);
+        } catch (Exception ex) {
+            log("Caught exception: " + ex.getMessage());
+        }
+
+        log("Accounts: " + accounts + "\n");
+    }
+
+    /**
+     * Demonstrates @AfterThrowing advice
+     */
+    private void demoAfterThrowingAdvice(AccountDAO accountDAO) {
+        log("demoAfterThrowingAdvice");
+
+        List<Account> accounts = null;
+
+        try {
+            accounts = accountDAO.findAccounts(true);
+        } catch (Exception ex) {
+            log("Caught exception: " + ex.getMessage());
+        }
+
+        log("Accounts: " + accounts + "\n");
+    }
+
+    /**
+     * Demonstrates @AfterReturning advice
+     */
+    private void demoAfterReturningAdvice(AccountDAO accountDAO) {
+        log("demoAfterReturningAdvice");
+
+        List<Account> accounts = accountDAO.findAccounts();
+
+        log("Accounts: " + accounts + "\n");
+    }
+
+    /**
+     * Demonstrates @Before advice
+     */
+    private void demoBeforeAdvice(AccountDAO accountDAO, MembershipDAO membershipDAO) {
+        log("demoBeforeAdvice");
+
+        Account account = new Account();
+        account.setName("Madhu");
+        account.setLevel("Platinum");
+
+        accountDAO.addAccount(account, true);
+        accountDAO.doWork();
+
+        accountDAO.setName("foobar");
+        accountDAO.setServiceCode("silver");
+
+        log("Account Name: " + accountDAO.getName());
+        log("Service Code: " + accountDAO.getServiceCode());
+
+        membershipDAO.addSillyMember();
+        membershipDAO.goToSleep();
+
+        log("Finished\n");
+    }
+
+    /**
+     * Utility logger for consistent output
+     */
+    private void log(String message) {
+        System.out.println("\n[APP] " + message);
     }
 }
