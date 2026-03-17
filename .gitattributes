@@ -1,2 +1,41 @@
-/mvnw text eol=lf
+###############################################################################
+# Maven Wrapper & Scripts
+###############################################################################
+
+# Ensure Unix shell scripts use LF (required for execution on Linux/macOS)
+mvnw text eol=lf
+*.sh text eol=lf
+
+# Ensure Windows command scripts use CRLF
 *.cmd text eol=crlf
+*.bat text eol=crlf
+
+###############################################################################
+# General Text Files
+###############################################################################
+
+# Normalize all text files to LF by default
+* text=auto eol=lf
+
+# Explicit overrides for common file types
+*.java text eol=lf
+*.xml  text eol=lf
+*.yml  text eol=lf
+*.yaml text eol=lf
+*.properties text eol=lf
+*.md   text eol=lf
+*.sql  text eol=lf
+
+###############################################################################
+# Binary Files (no EOL normalization)
+###############################################################################
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.jar binary
+*.war binary
+*.zip binary
