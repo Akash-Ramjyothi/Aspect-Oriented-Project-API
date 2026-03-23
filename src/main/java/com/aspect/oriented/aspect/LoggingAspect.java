@@ -4,108 +4,135 @@ import com.aspect.oriented.Account;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import java.lang.classfile.MethodSignature;
 import java.util.List;
 
+/**
+ * Logging Aspect
+ *
+ * Handles cross-cutting concerns like:
+ * - Method execution tracing
+ * - Performance monitoring
+ * - Exception logging
+ * - Data transformation
+ */
 @Aspect
 @Component
 @Order(2)
 public class LoggingAspect {
 
+    /**
+     * Around advice for performance monitoring on service layer
+     */
     @Around("execution(* com.aspect.oriented.service.*.getFortune(..))")
-    public Object aroundGetFortune(
-            ProceedingJoinPoint theProceedingJoinPoint) throws Throwable {
+    public Object aroundGetFortune(ProceedingJoinPoint joinPoint) throws Throwable {
 
-        String method = theProceedingJoinPoint.getSignature().toShortString();
-        System.out.println("\n=====>>> Executing @Around on method: " + method);
+        String method = joinPoint.getSignature().toShortString();
+        System.out.println("\n=====>>> [@Around] Executing method: " + method);
 
-//        long begin = System.currentTimeMillis();
-        long begin = System.nanoTime();
-
-        Object result = null;
+        long startTime = System.nanoTime();
+        Object result;
 
         try {
-            result = theProceedingJoinPoint.proceed();
-        } catch (Exception exc) {
-            System.out.println(exc.getMessage());
-
-//            result = "Major accident! But no worries, your private AOP helicopter is on the way!";
-            throw exc;
+            result = joinPoint.proceed();
+        } catch (Exception ex) {
+            System.out.println("\n=====>>> [@Around] Exception: " + ex.getMessage());
+            throw ex; // rethrow to maintain original behavior
         }
 
-        long end = System.nanoTime();
-        long duration = end - begin;
-
-        System.out.println("\n====> Duration: " + duration + " nanoseconds");
+        long duration = System.nanoTime() - startTime;
+        System.out.println("\n=====>>> [@Around] Execution time: " + duration + " ns");
 
         return result;
     }
 
-
+    /**
+     * After (finally) advice
+     */
     @After("execution(* com.aspect.oriented.dao.AccountDAO.findAccounts(..))")
-    public void afterFinallyFindAccountsAdvice(JoinPoint theJoinPoint) {
-        String method = theJoinPoint.getSignature().toShortString();
-        System.out.println("\n=====>>> Executing @After (finally) on method: " + method);
+    public void afterFinallyFindAccountsAdvice(JoinPoint joinPoint) {
+
+        String method = joinPoint.getSignature().toShortString();
+        System.out.println("\n=====>>> [@After] (finally) Executed: " + method);
     }
 
+    /**
+     * After throwing advice
+     */
     @AfterThrowing(
             pointcut = "execution(* com.aspect.oriented.dao.AccountDAO.findAccounts(..))",
-            throwing = "theExc"
+            throwing = "exception"
     )
-    public void afterThrowingFindAccountsAdvice(JoinPoint theJoinPoint, Throwable theExc) {
-        String method = theJoinPoint.getSignature().toShortString();
-        System.out.println("\n=====>>> Executing @AfterThrowing on method: " + method);
+    public void afterThrowingFindAccountsAdvice(JoinPoint joinPoint, Throwable exception) {
 
-        System.out.println("\n=====>>> The Exception is: " + theExc);
+        String method = joinPoint.getSignature().toShortString();
+        System.out.println("\n=====>>> [@AfterThrowing] Exception in: " + method);
+        System.out.println("\n=====>>> Exception details: " + exception);
     }
 
+    /**
+     * After returning advice
+     */
     @AfterReturning(
             pointcut = "execution(* com.aspect.oriented.dao.AccountDAO.findAccounts(..))",
             returning = "result"
     )
-    public void afterReturningFindAccountsAdivce(JoinPoint theJoinPoint, List<Account> result) {
+    public void afterReturningFindAccountsAdvice(JoinPoint joinPoint, List<Account> result) {
 
-        String method = theJoinPoint.getSignature().toShortString();
-        System.out.println("\n=====>>> Executing @AfterReturning on method: " + method);
+        String method = joinPoint.getSignature().toShortString();
+        System.out.println("\n=====>>> [@AfterReturning] Method completed: " + method);
 
-        System.out.println("\n=====>>> Result is: " + result);
+        System.out.println("\n=====>>> Original result: " + result);
 
-        convertAccountNamesToUpperCase(result);
-        System.out.println("\n=====>>> Result is: " + result);
+        transformAccountNamesToUpperCase(result);
+
+        System.out.println("\n=====>>> Modified result: " + result);
     }
 
-    private void convertAccountNamesToUpperCase(List<Account> result) {
-
-        for (Account tempAccount : result) {
-            String theUpperName = tempAccount.getName().toUpperCase();
-            tempAccount.setName(theUpperName);
-        }
-    }
-
-    //    @Before("execution(public void updateAccount())")
-//    @Before("execution(public void add*())")
-//    @Before("execution(* add*())")
+    /**
+     * Before advice for DAO layer (excluding getters/setters)
+     */
     @Before("com.aspect.oriented.aspect.AopExpressions.forDaoPackageNoGetterSetter()")
-    public void beforeAddAccountAdvice(JoinPoint theJoinPoint) {
-        System.out.println("\n====>>> Executing @Before advice on addAccount()");
+    public void beforeDaoMethodAdvice(JoinPoint joinPoint) {
 
-        org.aspectj.lang.reflect.MethodSignature methodSignature = (org.aspectj.lang.reflect.MethodSignature) theJoinPoint.getSignature();
+        System.out.println("\n====>>> [@Before] Executing DAO method");
+
+        MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
         System.out.println("Method: " + methodSignature);
 
-        Object[] args = theJoinPoint.getArgs();
+        Object[] args = joinPoint.getArgs();
 
-        for (Object tempArg : args) {
-            System.out.println("tempArg: " + tempArg);
+        for (Object arg : args) {
+            System.out.println("Argument: " + arg);
 
-            if (tempArg instanceof Account) {
-                Account theAccount = (Account) tempArg;
-
-                System.out.println("Account Name: " + theAccount.getName());
-                System.out.println("Account Level: " + theAccount.getLevel());
+            if (arg instanceof Account account) {
+                logAccountDetails(account);
             }
         }
+    }
+
+    /**
+     * Helper method to transform account names
+     */
+    private void transformAccountNamesToUpperCase(List<Account> accounts) {
+
+        if (accounts == null) return;
+
+        for (Account account : accounts) {
+            if (account.getName() != null) {
+                account.setName(account.getName().toUpperCase());
+            }
+        }
+    }
+
+    /**
+     * Helper method to log account details
+     */
+    private void logAccountDetails(Account account) {
+        System.out.println("Account Name: " + account.getName());
+        System.out.println("Account Level: " + account.getLevel());
     }
 }
